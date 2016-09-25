@@ -6,11 +6,16 @@ class Timer extends React.Component {
 
     this.state = {
       workInterval: true,
-      intervalLength: 10,
-      elapsedTime: 0
+      round: 1,
+      targetRounds: 4,
+      intervalLength: 60,
+      elapsedTime: 0,
+      timerActive: false
     };
 
+    this.timer;
     this.startTimer = this.startTimer.bind(this);
+    this.pauseTimer = this.pauseTimer.bind(this);
   }
 
   componentDidMount() {
@@ -36,21 +41,27 @@ class Timer extends React.Component {
   }
 
   startTimer() {
-    let initialOffset = 1257
-    let timer = setInterval(() => {
+    let initialOffset = 1257;
+    this.setState({timerActive: true});
+    this.timer = setInterval(() => {
       this.setState({elapsedTime: this.state.elapsedTime + 1});
 
       if (this.state.elapsedTime === this.state.intervalLength) {
-        clearInterval(timer);
+        clearInterval(this.timer);
         document.body.style.background = '#5CBC9E';
         return;
       }
-      
+
       let circle = document.getElementsByClassName('circle-animation');
       let c = circle[0].style;
       c.strokeDashoffset = initialOffset-((this.state.elapsedTime+1)*((initialOffset)/this.state.intervalLength));
 
     }, 1000);
+  }
+
+  pauseTimer() {
+    clearInterval(this.timer);
+    this.setState({timerActive: false});
   }
 
   render() {
@@ -59,14 +70,16 @@ class Timer extends React.Component {
         <h1>Task Name</h1>
         <svg width="500" height="500" viewBox="0 0 500 500">
           <g>
-            <text id="timer-text" x="51%" y="-18%" textAnchor="middle" dominantBaseline="central" stroke="white" strokeWidth="3px" dy=".3em">
+            <text id="timer-text" x="51%" y="-18%" textAnchor="middle" dominantBaseline="central" dy=".3em">
               { this.timerDisplay(this.state.intervalLength - this.state.elapsedTime) }
             </text>
             <circle id="circle" className="circle-animation" r="200" cy="250" cx="250" strokeWidth="3" stroke="white" fill="transparent">
             </circle>
           </g>
         </svg>
-        <div className="play-btn" onClick={this.startTimer}></div>
+        { this.state.timerActive ? <div className="pause-btn" onClick={this.pauseTimer}></div> :
+            <div className="play-btn" onClick={this.startTimer}></div>
+        }
         { "Round 1/4" }
       </div>
     );
