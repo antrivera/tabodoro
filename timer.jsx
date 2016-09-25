@@ -40,15 +40,16 @@ class Timer extends React.Component {
     let timer = setInterval(() => {
       this.setState({elapsedTime: this.state.elapsedTime + 1});
 
-      let circle = document.getElementsByClassName('circle-animation');
-      let c = circle[0].style;
-      c.strokeDashoffset = initialOffset-(this.state.elapsedTime*((initialOffset+1)/this.state.intervalLength));
-
       if (this.state.elapsedTime === this.state.intervalLength) {
         clearInterval(timer);
         document.body.style.background = '#5CBC9E';
         return;
       }
+      
+      let circle = document.getElementsByClassName('circle-animation');
+      let c = circle[0].style;
+      c.strokeDashoffset = initialOffset-((this.state.elapsedTime+1)*((initialOffset)/this.state.intervalLength));
+
     }, 1000);
   }
 
@@ -65,9 +66,8 @@ class Timer extends React.Component {
             </circle>
           </g>
         </svg>
-        <br />
+        <div className="play-btn" onClick={this.startTimer}></div>
         { "Round 1/4" }
-        <button onClick={this.startTimer}>Start</button>
       </div>
     );
   }

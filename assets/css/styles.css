@@ -21,10 +21,9 @@ h2 {
 }
 
 #root {
-  margin-top: 40px;
+  margin-top: 30px;
   display: flex;
   justify-content: center;
-  height: inherit;
 }
 
 .item {
@@ -76,6 +75,15 @@ text {
   background-size: cover;
   width: 37.5px;
   height: 35px;
+}
+
+.play-btn {
+  background-image: url(../img/play.png);
+  background-size: cover;
+  width: 37.5px;
+  height: 35px;
+  align-self: center;
+  cursor: pointer;
 }
 
 .icons {
