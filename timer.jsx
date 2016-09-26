@@ -14,7 +14,8 @@ class Timer extends React.Component {
       targetRounds: 4,
       intervalLength: 10,
       elapsedTime: 0,
-      timerActive: false
+      timerActive: false,
+      activeTask: 'Focus'
     };
 
     this.timer;
@@ -25,6 +26,7 @@ class Timer extends React.Component {
 
   componentDidMount() {
     this.getTotalRounds();
+    this.getActiveTask();
     this.syncStateListener();
   }
 
@@ -36,11 +38,26 @@ class Timer extends React.Component {
     });
   }
 
+  getActiveTask() {
+    chrome.storage.sync.get('activeTask', ({activeTask}) => {
+      if (activeTask) {
+        this.setState({activeTask});
+      }
+    });
+  }
+
   syncStateListener() {
-    chrome.storage.onChanged.addListener(({totalRounds, completedRounds}, namespace) => {
+    chrome.storage.onChanged.addListener(({totalRounds, completedRounds, activeTask}, namespace) => {
       console.log(totalRounds);
       console.log(completedRounds);
-      this.setState({totalRounds: totalRounds.newValue});
+      console.log(activeTask);
+      if (totalRounds) {
+        this.setState({totalRounds: totalRounds.newValue});
+      }
+
+      if (activeTask) {
+        this.setState({activeTask: activeTask.newValue});
+      }
     });
   }
 
@@ -117,13 +134,13 @@ class Timer extends React.Component {
       <div>
         <h2>Tabodoro</h2>
         <div className="icons">
-          <div className="settings"></div>
+          <div className="settings icon"></div>
           <Tasks />
-          <div className="progress"></div>
+          <div className="progress icon"></div>
         </div>
         <div className="timer-container">
           <div className="item">
-            <h1>Focus</h1>
+            <h1>{this.state.activeTask}</h1>
             <svg width="500" height="500" viewBox="0 0 500 500">
               <g>
                 <text id="timer-text" x="51%" y="-18%" textAnchor="middle" dominantBaseline="central" dy=".3em">

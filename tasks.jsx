@@ -1,4 +1,5 @@
 import React from 'react';
+import TaskList from './task_list';
 
 class Tasks extends React.Component {
   constructor() {
@@ -12,12 +13,9 @@ class Tasks extends React.Component {
 
   render() {
     return (
-      <div className="tasks" onClick={ this.toggleContentDisplay }>
-        <div id="task-list-container" className="hide">
-          <p>Study</p>
-          <p>Programming</p>
-          <p>Exercise</p>
-        </div>
+      <div>
+        <div className="tasks icon" onClick={ this.toggleContentDisplay }> </div>
+        <TaskList />
       </div>
     );
   }
