@@ -23,8 +23,6 @@ h2 {
 
 #root {
   margin-top: 30px;
-  display: flex;
-  justify-content: center;
 }
 
 .item {
@@ -70,6 +68,21 @@ text {
   background-size: cover;
   width: 37.5px;
   height: 37.5px;
+  position: relative;
+}
+
+.hide {
+  display: none;
+}
+
+#task-list-container {
+  /*display: none;*/
+  border: 1px solid green;
+  width: 150px;
+  position: absolute;
+  top: 50px;
+  background: white;
+  color: gray;
 }
 
 .progress {
@@ -101,9 +114,14 @@ text {
   display: flex;
 }
 
-.icons div {
+.icons > div {
   cursor: pointer;
   margin-right: 15px;
+}
+
+.timer-container {
+  display: flex;
+  justify-content: center;
 }
 
 /*

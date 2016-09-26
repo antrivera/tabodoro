@@ -1,4 +1,7 @@
+/* global chrome */
+
 import React from 'react';
+import Tasks from './tasks';
 
 class Timer extends React.Component {
   constructor() {
@@ -7,6 +10,7 @@ class Timer extends React.Component {
     this.state = {
       workInterval: true,
       completedRounds: 0,
+      totalRounds: 0,
       targetRounds: 4,
       intervalLength: 10,
       elapsedTime: 0,
@@ -16,10 +20,28 @@ class Timer extends React.Component {
     this.timer;
     this.startTimer = this.startTimer.bind(this);
     this.pauseTimer = this.pauseTimer.bind(this);
+    this.setState = this.setState.bind(this);
   }
 
   componentDidMount() {
-    console.log('here');
+    this.getTotalRounds();
+    this.syncStateListener();
+  }
+
+  getTotalRounds() {
+    chrome.storage.sync.get('totalRounds', ({totalRounds}) => {
+      if (totalRounds) {
+        this.setState({totalRounds});
+      }
+    });
+  }
+
+  syncStateListener() {
+    chrome.storage.onChanged.addListener(({totalRounds, completedRounds}, namespace) => {
+      console.log(totalRounds);
+      console.log(completedRounds);
+      this.setState({totalRounds: totalRounds.newValue});
+    });
   }
 
   timerDisplay(seconds) {
@@ -54,10 +76,13 @@ class Timer extends React.Component {
         if (this.state.workInterval) {
           this.setState({
             workInterval: false,
-            completedRounds: this.state.completedRounds + 1,
             intervalLength: 5,
+            completedRounds: this.state.completedRounds + 1,
             elapsedTime: 0
           });
+
+          chrome.storage.sync.set({completedRounds: this.state.completedRounds, totalRounds: this.state.totalRounds + 1});
+
           document.body.style.background = '#5CBC9E';
           c.strokeDashoffset = initialOffset;
         } else {
@@ -71,6 +96,7 @@ class Timer extends React.Component {
 
           if (this.state.completedRounds === this.state.targetRounds) {
             clearInterval(this.timer);
+            this.setState({timerActive: false});
           }
         }
 
@@ -88,21 +114,32 @@ class Timer extends React.Component {
 
   render() {
     return (
-      <div className="item">
-        <h1>Task Name</h1>
-        <svg width="500" height="500" viewBox="0 0 500 500">
-          <g>
-            <text id="timer-text" x="51%" y="-18%" textAnchor="middle" dominantBaseline="central" dy=".3em">
-              { this.timerDisplay(Math.abs(this.state.intervalLength - this.state.elapsedTime)) }
-            </text>
-            <circle id="circle" className="circle-animation" r="200" cy="250" cx="250" strokeWidth="3" stroke="white" fill="transparent">
-            </circle>
-          </g>
-        </svg>
-        { this.state.timerActive ? <div className="pause-btn" onClick={this.pauseTimer}></div> :
-            <div className="play-btn" onClick={this.startTimer}></div>
-        }
-        <div>Round {this.state.completedRounds}/{this.state.targetRounds}</div>
+      <div>
+        <h2>Tabodoro</h2>
+        <div className="icons">
+          <div className="settings"></div>
+          <Tasks />
+          <div className="progress"></div>
+        </div>
+        <div className="timer-container">
+          <div className="item">
+            <h1>Focus</h1>
+            <svg width="500" height="500" viewBox="0 0 500 500">
+              <g>
+                <text id="timer-text" x="51%" y="-18%" textAnchor="middle" dominantBaseline="central" dy=".3em">
+                  { this.timerDisplay(Math.abs(this.state.intervalLength - this.state.elapsedTime)) }
+                </text>
+                <circle id="circle" className="circle-animation" r="200" cy="250" cx="250" strokeWidth="3" stroke="white" fill="transparent">
+                </circle>
+              </g>
+            </svg>
+            { this.state.timerActive ? <div className="pause-btn" onClick={this.pauseTimer}></div> :
+                <div className="play-btn" onClick={this.startTimer}></div>
+            }
+            <div>Round {this.state.completedRounds}/{this.state.targetRounds}</div>
+            <div>Total {this.state.totalRounds}</div>
+          </div>
+        </div>
       </div>
     );
   }
