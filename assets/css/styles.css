@@ -101,6 +101,7 @@ text {
   /*display: none;*/
   border: 1px solid whitesmoke;
   width: 200px;
+  padding: 10px;
   position: absolute;
   /*top: 50px;*/
   background: white;
@@ -156,6 +157,7 @@ text {
 
 .setting-input {
   width: 50px;
+  text-align: center;
 }
 
 .progress {

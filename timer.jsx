@@ -13,7 +13,8 @@ class Timer extends React.Component {
       completedRounds: 0,
       totalRounds: 0,
       targetRounds: 4,
-      intervalLength: 10,
+      intervalLength: 25*60,
+      breakIntervalLen: 5*60,
       elapsedTime: 0,
       timerActive: false,
       activeTask: 'Focus'
@@ -28,7 +29,16 @@ class Timer extends React.Component {
   componentDidMount() {
     this.getTotalRounds();
     this.getActiveTask();
+    this.fetchIntervalLength();
     this.syncStateListener();
+  }
+
+  fetchIntervalLength() {
+    chrome.storage.sync.get({pomodoroLen: this.state.intervalLength, breakLen: this.state.breakIntervalLen},
+      ({pomodoroLen, breakLen}) => {
+        this.setState({intervalLength: pomodoroLen*60, breakIntervalLen: breakLen*60});
+      }
+    );
   }
 
   getTotalRounds() {
@@ -48,12 +58,17 @@ class Timer extends React.Component {
   }
 
   syncStateListener() {
-    chrome.storage.onChanged.addListener(({totalRounds, completedRounds, activeTask}, namespace) => {
-      console.log(totalRounds);
-      console.log(completedRounds);
-      console.log(activeTask);
+    chrome.storage.onChanged.addListener(({totalRounds, completedRounds, activeTask, pomodoroLen, breakLen}, namespace) => {
       if (totalRounds) {
         this.setState({totalRounds: totalRounds.newValue});
+      }
+
+      if (pomodoroLen) {
+        this.setState({intervalLength: pomodoroLen.newValue * 60});
+      }
+
+      if (breakLen) {
+        this.setState({breakIntervalLen: breakLen.newValue * 60});
       }
 
       if (activeTask) {
@@ -90,11 +105,12 @@ class Timer extends React.Component {
       let c = circle[0].style;
       let updatedTime = this.state.elapsedTime + 1;
 
-      if (this.state.elapsedTime % this.state.intervalLength === 0) {
+      let timerDuration = this.state.workInterval ? this.state.intervalLength : this.state.breakIntervalLen
+
+      if (this.state.elapsedTime % timerDuration === 0) {
         if (this.state.workInterval) {
           this.setState({
             workInterval: false,
-            intervalLength: 5,
             completedRounds: this.state.completedRounds + 1,
             elapsedTime: 0
           });
@@ -106,7 +122,6 @@ class Timer extends React.Component {
         } else {
           this.setState({
             workInterval: true,
-            intervalLength: 10,
             elapsedTime: 0
           });
           document.body.style.background = '#EC5E54';
@@ -121,7 +136,7 @@ class Timer extends React.Component {
         return;
       }
 
-      c.strokeDashoffset = initialOffset-((updatedTime)*((initialOffset)/this.state.intervalLength));
+      c.strokeDashoffset = initialOffset-((updatedTime)*((initialOffset)/timerDuration));
     }, 1000);
   }
 
@@ -131,6 +146,8 @@ class Timer extends React.Component {
   }
 
   render() {
+    let timerDuration = this.state.workInterval ? this.state.intervalLength : this.state.breakIntervalLen
+
     return (
       <div>
         <h2>Tabodoro</h2>
@@ -144,7 +161,7 @@ class Timer extends React.Component {
             <svg width="500" height="500" viewBox="0 0 500 500">
               <g>
                 <text id="timer-text" x="51%" y="-18%" textAnchor="middle" dominantBaseline="central" dy=".3em">
-                  { this.timerDisplay(Math.abs(this.state.intervalLength - this.state.elapsedTime)) }
+                  { this.timerDisplay(Math.abs(timerDuration - this.state.elapsedTime)) }
                 </text>
                 <circle id="circle" className="circle-animation" r="200" cy="250" cx="250" strokeWidth="3" stroke="white" fill="transparent">
                 </circle>

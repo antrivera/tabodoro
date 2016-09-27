@@ -5,11 +5,47 @@ import React from 'react';
 class Settings extends React.Component {
   constructor() {
     super();
+
+    this.state = {
+      pomodoroLen: 25,
+      breakLen: 5,
+      longBreakLen: 15,
+      longBreakAfter: 4,
+      goal: 10
+    };
+
+    this.saveSettings = this.saveSettings.bind(this);
+  }
+
+  componentDidMount() {
+    this.fetchSettings();
+  }
+
+  fetchSettings() {
+    chrome.storage.sync.get(this.state, ({pomodoroLen, breakLen, longBreakLen, longBreakAfter, goal}) => {
+      this.setState({pomodoroLen, breakLen, longBreakLen, longBreakAfter, goal});
+    });
   }
 
   toggleContentDisplay() {
     let settings = document.getElementById('settings-container');
     settings.classList.toggle('hide');
+  }
+
+  updateSettings(field) {
+    return e => {
+      this.setState({[field]: e.currentTarget.value});
+    }
+  }
+
+  saveSettings() {
+    chrome.storage.sync.set({
+      pomodoroLen: this.state.pomodoroLen,
+      breakLen: this.state.breakLen,
+      longBreakLen: this.state.longBreakLen,
+      longBreakAfter: this.state.longBreakAfter,
+      goal: this.state.goal
+    });
   }
 
   render() {
@@ -18,21 +54,26 @@ class Settings extends React.Component {
         <div className={"settings icon"} onClick={ this.toggleContentDisplay }></div>
         <div id="settings-container" className="hide">
           <div className="setting-item">
-            Pomodoro <input className="setting-input" type="text" placeholder="25" step="5" min="10" max="60" /> min
+            Pomodoro
+            <input className="setting-input" type="text" value={this.state.pomodoroLen} onChange={ this.updateSettings('pomodoroLen')}/> min
           </div>
           <div className="setting-item">
-            Short Break <input className="setting-input" type="text" placeholder="5" step="5" min="10" max="60" /> min
+            Short Break
+            <input className="setting-input" type="text" value={this.state.breakLen} onChange={ this.updateSettings('breakLen')}/> min
           </div>
           <div className="setting-item">
-            Long Break <input className="setting-input" type="text" placeholder="15" step="5" min="10" max="60" /> min
+            Long Break
+            <input className="setting-input" type="text" value={this.state.longBreakLen} onChange={ this.updateSettings('longBreakLen')}/> min
           </div>
           <div className="setting-item">
-            Long Break After <input className="setting-input" type="text" placeholder="4" step="5" min="10" max="10" /> rounds
+            Long Break After
+            <input className="setting-input" type="text" value={this.state.longBreakAfter} onChange={ this.updateSettings('longBreakAfter')}/> rounds
           </div>
           <div className="setting-item">
-            Goal <input className="setting-input" type="text" placeholder="10"  max="50" /> daily
+            Goal
+            <input className="setting-input" type="text" value={this.state.goal}  onChange={ this.updateSettings('goal')}/> daily
           </div>
-          <button className="save-settings">Save</button>
+          <button className="save-settings" onClick={ this.saveSettings }>Save</button>
         </div>
       </div>
     );
