@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Tasks from './tasks';
+import Settings from './settings';
 
 class Timer extends React.Component {
   constructor() {
@@ -134,9 +135,8 @@ class Timer extends React.Component {
       <div>
         <h2>Tabodoro</h2>
         <div className="icons">
-          <div className="settings icon"></div>
+          <Settings />
           <Tasks />
-          <div className="progress icon"></div>
         </div>
         <div className="timer-container">
           <div className="item">

@@ -5,7 +5,7 @@ html {
 body {
   background: #EC5E54;
   color: white;
-  height: inherit;
+  /*height: inherit;*/
   font-family: 'Open sans', sans-serif;
 }
 
@@ -70,6 +70,7 @@ text {
   background-size: cover;
   width: 45px;
   height: 37.5px;
+  position: relative;
 }
 
 .tasks {
@@ -92,6 +93,20 @@ text {
   /*top: 50px;*/
   background: white;
   color: gray;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#settings-container {
+  /*display: none;*/
+  border: 1px solid whitesmoke;
+  width: 200px;
+  position: absolute;
+  /*top: 50px;*/
+  background: white;
+  color: gray;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .save-new-task {
@@ -101,6 +116,16 @@ text {
   border: 2px solid #5CBC9E;
   background: white;
   padding: 0;
+}
+
+.save-settings {
+  cursor: pointer;
+  width: 90%;
+  color: #5CBC9E;
+  border: 2px solid #5CBC9E;
+  background: white;
+  padding: 0;
+  margin: 10px 10px 10px 10px;
 }
 
 .new-task {
@@ -117,11 +142,20 @@ text {
   margin-right: 2px;
 }
 
-.task-item {
+.task-item, .setting-item {
   border-bottom: 1px solid whitesmoke;
   padding-top: 2px;
   padding-bottom: 2px;
   cursor: pointer;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-around;
+}
+
+.setting-input {
+  width: 50px;
 }
 
 .progress {
