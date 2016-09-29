@@ -12,7 +12,15 @@
  "chrome_url_overrides": {
    "newtab": "timer.html"
  },
+ "content_scripts": [
+   {
+     "matches": ["*://*.facebook.com/*"],
+     "js": ["block.js"],
+     "run_at": "document_start"
+   }
+ ],
  "permissions": [
+   "tabs",
    "storage",
    "https://ajax.googleapis.com/"
  ]
