@@ -13,10 +13,23 @@ class TaskList extends React.Component {
 
     this.saveNewTask = this.saveNewTask.bind(this);
     this.updateActiveTask = this.updateActiveTask.bind(this);
+    this._hideTasks = this._hideTasks.bind(this);
   }
 
   componentDidMount() {
     this.fetchStoredTasks();
+    document.addEventListener('click', this._hideTasks(), false);
+  }
+
+  _hideTasks() {
+    return e => {
+      let tasks = document.getElementById('task-list-container');
+      let taskIcon = document.getElementsByClassName('tasks')[0];
+
+      if (e.target !== taskIcon && !tasks.contains(e.target)) {
+        tasks.classList.add('hide');
+      }
+    }
   }
 
   fetchStoredTasks() {

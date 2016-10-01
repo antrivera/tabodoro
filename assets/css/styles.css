@@ -108,6 +108,7 @@ text {
   color: gray;
   max-height: 200px;
   overflow-y: auto;
+  z-index: 1;
 }
 
 .save-new-task {

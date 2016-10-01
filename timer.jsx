@@ -95,6 +95,14 @@ class Timer extends React.Component {
     return display;
   }
 
+  intervalEnd(msg) {
+    let ringer = document.getElementById('ringer')
+    ringer.play();
+    alert(msg);
+    ringer.pause();
+    ringer.currentTime = 0;
+  }
+
   startTimer() {
     let initialOffset = 1257;
     this.setState({timerActive: true});
@@ -116,6 +124,7 @@ class Timer extends React.Component {
           });
 
           chrome.storage.sync.set({completedRounds: this.state.completedRounds, totalRounds: this.state.totalRounds + 1});
+          this.intervalEnd('Time for a break');
 
           document.body.style.background = '#5CBC9E';
           c.strokeDashoffset = initialOffset;
@@ -124,6 +133,9 @@ class Timer extends React.Component {
             workInterval: true,
             elapsedTime: 0
           });
+
+          this.intervalEnd('Time to get to work');
+
           document.body.style.background = '#EC5E54';
           c.strokeDashoffset = initialOffset;
 

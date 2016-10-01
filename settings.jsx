@@ -15,10 +15,22 @@ class Settings extends React.Component {
     };
 
     this.saveSettings = this.saveSettings.bind(this);
+    this._hideSettings = this._hideSettings.bind(this);
   }
 
   componentDidMount() {
     this.fetchSettings();
+    document.addEventListener('click', this._hideSettings(), false);
+  }
+
+  _hideSettings() {
+    return e => {
+      let settings = document.getElementById('settings-container');
+      let settingsIcon = document.getElementsByClassName('settings')[0];
+      if (e.target !== settingsIcon && !settings.contains(e.target)) {
+        settings.classList.add('hide');
+      }
+    }
   }
 
   fetchSettings() {
