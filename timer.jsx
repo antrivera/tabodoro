@@ -1,5 +1,4 @@
 /* global chrome */
-
 import React from 'react';
 import Tasks from './tasks';
 import Settings from './settings';
@@ -13,8 +12,10 @@ class Timer extends React.Component {
       completedRounds: 0,
       totalRounds: 0,
       targetRounds: 4,
-      intervalLength: 25*60,
-      breakIntervalLen: 5*60,
+      intervalLength: 25,
+      breakIntervalLen: 5,
+      longBreakLen: 15,
+      longBreakAfter: 4,
       elapsedTime: 0,
       timerActive: false,
       activeTask: 'Focus'
@@ -27,21 +28,41 @@ class Timer extends React.Component {
   }
 
   componentDidMount() {
-    this.getTotalRounds();
-    this.getActiveTask();
+    this.fetchTotalRounds();
+    this.fetchActiveTask();
     this.fetchIntervalLength();
+    this.fetchCurrentDate();
     this.syncStateListener();
   }
 
+  fetchCurrentDate() {
+    let now = new Date;
+    chrome.storage.sync.get({timeStamp: {day: now.getDate(), month: now.getMonth(), year: now.getFullYear()}},
+    ({timeStamp}) => {
+      let today = new Date;
+      if (today.getDate() !== timeStamp.day || today.getMonth() !== timeStamp.month || today.getFullYear() !== timeStamp.year) {
+        this.resetCompletedPomodoros();
+      }
+    });
+  }
+
+  resetCompletedPomodoros() {
+    chrome.storage.sync.set({totalRounds: 0});
+  }
+
   fetchIntervalLength() {
-    chrome.storage.sync.get({pomodoroLen: this.state.intervalLength, breakLen: this.state.breakIntervalLen},
-      ({pomodoroLen, breakLen}) => {
-        this.setState({intervalLength: pomodoroLen*60, breakIntervalLen: breakLen*60});
+    chrome.storage.sync.get({
+      pomodoroLen: this.state.intervalLength,
+      breakLen: this.state.breakIntervalLen,
+      longBreakLen: this.state.longBreakLen,
+      longBreakAfter: this.state.longBreakAfter},
+      ({pomodoroLen, breakLen, longBreakLen, longBreakAfter}) => {
+        this.setState({intervalLength: pomodoroLen*60, breakIntervalLen: breakLen*60, longBreakLen: longBreakLen*60, longBreakAfter});
       }
     );
   }
 
-  getTotalRounds() {
+  fetchTotalRounds() {
     chrome.storage.sync.get('totalRounds', ({totalRounds}) => {
       if (totalRounds) {
         this.setState({totalRounds});
@@ -49,7 +70,7 @@ class Timer extends React.Component {
     });
   }
 
-  getActiveTask() {
+  fetchActiveTask() {
     chrome.storage.sync.get('activeTask', ({activeTask}) => {
       if (activeTask) {
         this.setState({activeTask});
@@ -58,7 +79,18 @@ class Timer extends React.Component {
   }
 
   syncStateListener() {
-    chrome.storage.onChanged.addListener(({totalRounds, completedRounds, activeTask, pomodoroLen, breakLen}, namespace) => {
+    chrome.storage.onChanged.addListener(({
+      totalRounds,
+      completedRounds,
+      activeTask,
+      pomodoroLen,
+      timerActive,
+      elapsedTime,
+      breakLen,
+      longBreakLen,
+      longBreakAfter
+    }, namespace) => {
+
       if (totalRounds) {
         this.setState({totalRounds: totalRounds.newValue});
       }
@@ -69,6 +101,14 @@ class Timer extends React.Component {
 
       if (breakLen) {
         this.setState({breakIntervalLen: breakLen.newValue * 60});
+      }
+
+      if (longBreakLen) {
+        this.setState({longBreakLen: longBreakLen.newValue * 60});
+      }
+
+      if (longBreakAfter) {
+        this.setState({longBreakAfter: longBreakAfter.newValue});
       }
 
       if (activeTask) {
@@ -106,14 +146,22 @@ class Timer extends React.Component {
   startTimer() {
     let initialOffset = 1257;
     this.setState({timerActive: true});
+    chrome.storage.sync.set({timerActive: true});
 
     this.timer = setInterval(() => {
       this.setState({elapsedTime: this.state.elapsedTime + 1});
+
       let circle = document.getElementsByClassName('circle-animation');
       let c = circle[0].style;
       let updatedTime = this.state.elapsedTime + 1;
 
       let timerDuration = this.state.workInterval ? this.state.intervalLength : this.state.breakIntervalLen
+
+      if (!this.state.workInterval) {
+        if (this.state.completedRounds % this.state.longBreakAfter === 0) {
+          timerDuration = this.state.longBreakLen;
+        }
+      }
 
       if (this.state.elapsedTime % timerDuration === 0) {
         if (this.state.workInterval) {
@@ -141,6 +189,7 @@ class Timer extends React.Component {
 
           if (this.state.completedRounds === this.state.targetRounds) {
             clearInterval(this.timer);
+            chrome.storage.sync.set({timerActive: false});
             this.setState({timerActive: false});
           }
         }
@@ -154,19 +203,28 @@ class Timer extends React.Component {
 
   pauseTimer() {
     clearInterval(this.timer);
+    chrome.storage.sync.set({timerActive: false});
     this.setState({timerActive: false});
   }
 
   render() {
     let timerDuration = this.state.workInterval ? this.state.intervalLength : this.state.breakIntervalLen
 
+    if (!this.state.workInterval) {
+      if (this.state.completedRounds % this.state.longBreakAfter === 0) {
+        timerDuration = this.state.longBreakLen;
+      }
+    }
+
     return (
       <div>
         <h2>Tabodoro</h2>
+
         <div className="icons">
           <Settings />
           <Tasks />
         </div>
+
         <div className="timer-container">
           <div className="item">
             <h1>{this.state.activeTask}</h1>
@@ -182,10 +240,10 @@ class Timer extends React.Component {
             { this.state.timerActive ? <div className="pause-btn" onClick={this.pauseTimer}></div> :
                 <div className="play-btn" onClick={this.startTimer}></div>
             }
-            <div>Round {this.state.completedRounds}/{this.state.targetRounds}</div>
-            <div>Total {this.state.totalRounds}</div>
           </div>
         </div>
+
+        <div id="completed-rounds">{this.state.totalRounds} pomodoros completed</div>
       </div>
     );
   }

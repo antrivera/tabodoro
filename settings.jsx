@@ -46,6 +46,9 @@ class Settings extends React.Component {
 
   updateSettings(field) {
     return e => {
+      if (isNaN(e.currentTarget.value)) {
+        return;
+      }
       this.setState({[field]: e.currentTarget.value});
     }
   }

@@ -200,6 +200,10 @@ text {
   justify-content: center;
 }
 
+#completed-rounds {
+  margin: 10px 10px 10px 25px;
+}
+
 /*
 @keyframes all {
   0% {
