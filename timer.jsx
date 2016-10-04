@@ -2,6 +2,7 @@
 import React from 'react';
 import Tasks from './tasks';
 import Settings from './settings';
+import BlockList from './blocklist';
 
 class Timer extends React.Component {
   constructor() {
@@ -32,7 +33,15 @@ class Timer extends React.Component {
     this.fetchActiveTask();
     this.fetchIntervalLength();
     this.fetchCurrentDate();
+    this.fetchTimerState();
     this.syncStateListener();
+  }
+
+  fetchTimerState() {
+    chrome.storage.sync.get({workInterval: this.state.workInterval, timerActive: this.state.timerActive},
+    ({workInterval, timerActive}) => {
+      this.setState({workInterval, timerActive});
+    });
   }
 
   fetchCurrentDate() {
@@ -171,7 +180,11 @@ class Timer extends React.Component {
             elapsedTime: 0
           });
 
-          chrome.storage.sync.set({completedRounds: this.state.completedRounds, totalRounds: this.state.totalRounds + 1});
+          chrome.storage.sync.set({
+            completedRounds: this.state.completedRounds,
+            totalRounds: this.state.totalRounds + 1,
+            workInterval: false
+          });
           this.intervalEnd('Time for a break');
 
           document.body.style.background = '#5CBC9E';
@@ -181,6 +194,8 @@ class Timer extends React.Component {
             workInterval: true,
             elapsedTime: 0
           });
+
+          chrome.storage.sync.set({workInterval: true});
 
           this.intervalEnd('Time to get to work');
 
@@ -223,6 +238,7 @@ class Timer extends React.Component {
         <div className="icons">
           <Settings />
           <Tasks />
+          <BlockList />
         </div>
 
         <div className="timer-container">

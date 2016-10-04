@@ -73,6 +73,14 @@ text {
   position: relative;
 }
 
+.blocklist {
+  background-image: url(../img/blocklist.png);
+  background-size: cover;
+  width: 36px;
+  height: 36px;
+  position: relative;
+}
+
 .tasks {
   background-image: url(../img/tasks.png);
   background-size: cover;
