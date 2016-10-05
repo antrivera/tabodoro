@@ -28,7 +28,7 @@ class Timer extends React.Component {
     this.setState = this.setState.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.fetchTotalRounds();
     this.fetchActiveTask();
     this.fetchIntervalLength();
@@ -90,11 +90,8 @@ class Timer extends React.Component {
   syncStateListener() {
     chrome.storage.onChanged.addListener(({
       totalRounds,
-      completedRounds,
       activeTask,
       pomodoroLen,
-      timerActive,
-      elapsedTime,
       breakLen,
       longBreakLen,
       longBreakAfter
