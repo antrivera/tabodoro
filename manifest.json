@@ -13,7 +13,8 @@
    "newtab": "timer.html"
  },
  "background": {
-   "scripts": ["background.js"]
+   "scripts": ["background.js"],
+   "persistent": true
  },
  "permissions": [
    "tabs",

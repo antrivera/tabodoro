@@ -16,7 +16,7 @@ class Timer extends React.Component {
       intervalLength: 25,
       breakIntervalLen: 5,
       longBreakLen: 15,
-      longBreakAfter: 4,
+      longBreakAfter: 5,
       elapsedTime: 0,
       timerActive: false,
       activeTask: 'Focus'
@@ -29,17 +29,19 @@ class Timer extends React.Component {
   }
 
   componentWillMount() {
-    this.fetchTotalRounds();
+    this.fetchRounds();
     this.fetchActiveTask();
     this.fetchIntervalLength();
     this.fetchCurrentDate();
     this.fetchTimerState();
     this.syncStateListener();
+    this.timerDisplayListener();
   }
 
   fetchTimerState() {
     chrome.storage.sync.get({workInterval: this.state.workInterval, timerActive: this.state.timerActive},
     ({workInterval, timerActive}) => {
+      document.body.style.background = workInterval ? '#EC5E54' : '#5CBC9E';
       this.setState({workInterval, timerActive});
     });
   }
@@ -71,10 +73,14 @@ class Timer extends React.Component {
     );
   }
 
-  fetchTotalRounds() {
-    chrome.storage.sync.get('totalRounds', ({totalRounds}) => {
+  fetchRounds() {
+    chrome.storage.sync.get({totalRounds: this.state.totalRounds, completedRounds: this.state.completedRounds}, ({totalRounds, completedRounds}) => {
       if (totalRounds) {
         this.setState({totalRounds});
+      }
+
+      if (completedRounds) {
+        this.setState({completedRounds});
       }
     });
   }
@@ -83,6 +89,31 @@ class Timer extends React.Component {
     chrome.storage.sync.get('activeTask', ({activeTask}) => {
       if (activeTask) {
         this.setState({activeTask});
+      }
+    });
+  }
+
+  timerDisplayListener() {
+    chrome.storage.onChanged.addListener(({elapsedTime, strokeDashOffset, timerActive, workInterval, completedRounds}, namespace) => {
+      if (elapsedTime) {
+        this.setState({elapsedTime: elapsedTime.newValue});
+      }
+
+      if (timerActive) {
+        this.setState({timerActive: timerActive.newValue});
+      }
+
+      if (strokeDashOffset) {
+        document.getElementsByClassName('circle-animation')[0].style['stroke-dashoffset'] = strokeDashOffset.newValue;
+      }
+
+      if (workInterval) {
+        this.setState({workInterval: workInterval.newValue});
+        document.body.style.background = workInterval.newValue ? '#EC5E54' : '#5CBC9E';
+      }
+
+      if (completedRounds) {
+        this.setState({completedRounds: completedRounds.newValue});
       }
     });
   }
@@ -150,73 +181,11 @@ class Timer extends React.Component {
   }
 
   startTimer() {
-    let initialOffset = 1257;
-    this.setState({timerActive: true});
     chrome.storage.sync.set({timerActive: true});
-
-    this.timer = setInterval(() => {
-      this.setState({elapsedTime: this.state.elapsedTime + 1});
-
-      let circle = document.getElementsByClassName('circle-animation');
-      let c = circle[0].style;
-      let updatedTime = this.state.elapsedTime + 1;
-
-      let timerDuration = this.state.workInterval ? this.state.intervalLength : this.state.breakIntervalLen
-
-      if (!this.state.workInterval) {
-        if (this.state.completedRounds % this.state.longBreakAfter === 0) {
-          timerDuration = this.state.longBreakLen;
-        }
-      }
-
-      if (this.state.elapsedTime % timerDuration === 0) {
-        if (this.state.workInterval) {
-          this.setState({
-            workInterval: false,
-            completedRounds: this.state.completedRounds + 1,
-            elapsedTime: 0
-          });
-
-          chrome.storage.sync.set({
-            completedRounds: this.state.completedRounds,
-            totalRounds: this.state.totalRounds + 1,
-            workInterval: false
-          });
-          this.intervalEnd('Time for a break');
-
-          document.body.style.background = '#5CBC9E';
-          c.strokeDashoffset = initialOffset;
-        } else {
-          this.setState({
-            workInterval: true,
-            elapsedTime: 0
-          });
-
-          chrome.storage.sync.set({workInterval: true});
-
-          this.intervalEnd('Time to get to work');
-
-          document.body.style.background = '#EC5E54';
-          c.strokeDashoffset = initialOffset;
-
-          if (this.state.completedRounds === this.state.targetRounds) {
-            clearInterval(this.timer);
-            chrome.storage.sync.set({timerActive: false});
-            this.setState({timerActive: false});
-          }
-        }
-
-        return;
-      }
-
-      c.strokeDashoffset = initialOffset-((updatedTime)*((initialOffset)/timerDuration));
-    }, 1000);
   }
 
   pauseTimer() {
-    clearInterval(this.timer);
     chrome.storage.sync.set({timerActive: false});
-    this.setState({timerActive: false});
   }
 
   render() {

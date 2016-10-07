@@ -9,7 +9,6 @@ class BlockList extends React.Component {
       siteName: "",
       blockedSites: [
         'facebook.com',
-        'youtube.com',
         'twitter.com',
         'reddit.com',
         'netflix.com',
