@@ -11,7 +11,7 @@ class Settings extends React.Component {
       breakLen: 5,
       longBreakLen: 15,
       longBreakAfter: 4,
-      goal: 10
+      targetRounds: 10
     };
 
     this.saveSettings = this.saveSettings.bind(this);
@@ -34,8 +34,8 @@ class Settings extends React.Component {
   }
 
   fetchSettings() {
-    chrome.storage.sync.get(this.state, ({pomodoroLen, breakLen, longBreakLen, longBreakAfter, goal}) => {
-      this.setState({pomodoroLen, breakLen, longBreakLen, longBreakAfter, goal});
+    chrome.storage.sync.get(this.state, ({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds}) => {
+      this.setState({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds});
     });
   }
 
@@ -59,7 +59,7 @@ class Settings extends React.Component {
       breakLen: this.state.breakLen,
       longBreakLen: this.state.longBreakLen,
       longBreakAfter: this.state.longBreakAfter,
-      goal: this.state.goal
+      targetRounds: this.state.targetRounds
     });
   }
 
@@ -86,7 +86,7 @@ class Settings extends React.Component {
           </div>
           <div className="setting-item">
             Goal
-            <input className="setting-input" type="text" value={this.state.goal}  onChange={ this.updateSettings('goal')}/> daily
+            <input className="setting-input" type="text" value={this.state.targetRounds}  onChange={ this.updateSettings('targetRounds')}/> daily
           </div>
           <button className="save-settings" onClick={ this.saveSettings }>Save</button>
         </div>

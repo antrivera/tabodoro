@@ -16,7 +16,7 @@ class Timer extends React.Component {
       intervalLength: 25,
       breakIntervalLen: 5,
       longBreakLen: 15,
-      longBreakAfter: 5,
+      longBreakAfter: 4,
       elapsedTime: 0,
       timerActive: false,
       activeTask: 'Focus'
@@ -74,14 +74,8 @@ class Timer extends React.Component {
   }
 
   fetchRounds() {
-    chrome.storage.sync.get({totalRounds: this.state.totalRounds, completedRounds: this.state.completedRounds}, ({totalRounds, completedRounds}) => {
-      if (totalRounds) {
-        this.setState({totalRounds});
-      }
-
-      if (completedRounds) {
-        this.setState({completedRounds});
-      }
+    chrome.storage.sync.get({totalRounds: this.state.totalRounds, completedRounds: this.state.completedRounds, targetRounds: this.state.targetRounds}, ({totalRounds, completedRounds, targetRounds}) => {
+        this.setState({totalRounds, completedRounds, targetRounds});
     });
   }
 
@@ -121,6 +115,7 @@ class Timer extends React.Component {
   syncStateListener() {
     chrome.storage.onChanged.addListener(({
       totalRounds,
+      targetRounds,
       activeTask,
       pomodoroLen,
       breakLen,
@@ -130,6 +125,10 @@ class Timer extends React.Component {
 
       if (totalRounds) {
         this.setState({totalRounds: totalRounds.newValue});
+      }
+
+      if (targetRounds) {
+        this.setState({targetRounds: targetRounds.newValue});
       }
 
       if (pomodoroLen) {
@@ -145,7 +144,7 @@ class Timer extends React.Component {
       }
 
       if (longBreakAfter) {
-        this.setState({longBreakAfter: longBreakAfter.newValue});
+        this.setState({longBreakAfter: parseInt(longBreakAfter.newValue)});
       }
 
       if (activeTask) {

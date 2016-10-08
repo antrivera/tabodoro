@@ -35,11 +35,12 @@ class TimerManager {
       elapsedTime: 0,
       totalRounds: 0,
       completedRounds: 0,
+      targetRounds: 10,
       workInterval: true,
       intervalLength: 25,
       breakIntervalLen: 5,
       longBreakLen: 15,
-      longBreakAfter: 5,
+      longBreakAfter: 4,
       strokeDashOffset: 1257
     }
 
@@ -48,7 +49,7 @@ class TimerManager {
   }
 
   addChangeListener() {
-    chrome.storage.onChanged.addListener(({pomodoroLen, breakLen, longBreakLen, longBreakAfter}, namespace) => {
+    chrome.storage.onChanged.addListener(({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds, completedRounds}, namespace) => {
       if (pomodoroLen) {
         this.timerState.intervalLength = pomodoroLen.newValue*60;
       }
@@ -59,15 +60,23 @@ class TimerManager {
         this.timerState.longBreakLen = longBreakLen.newValue*60;
       }
       if (longBreakAfter) {
-        this.timerState.longBreakAfter = longBreakAfter.newValue;
+        this.timerState.longBreakAfter = parseInt(longBreakAfter.newValue);
+      }
+
+      if (targetRounds) {
+        this.timerState.targetRounds = parseInt(targetRounds.newValue);
+      }
+
+      if (completedRounds) {
+        this.timerState.completedRounds = completedRounds.newValue;
       }
     });
   }
 
   synchTimerState() {
-    let {totalRounds, completedRounds, workInterval, intervalLength, breakIntervalLen, longBreakLen, longBreakAfter, strokeDashOffset} = this.timerState;
-    chrome.storage.sync.get({totalRounds, completedRounds, workInterval, pomodoroLen: intervalLength, breakLen: breakIntervalLen, longBreakLen, longBreakAfter, timerActive: false},
-    ({totalRounds, completedRounds, workInterval, pomodoroLen, breakLen, longBreakLen, longBreakAfter, timerActive}) => {
+    let {totalRounds, completedRounds, targetRounds, workInterval, intervalLength, breakIntervalLen, longBreakLen, longBreakAfter, strokeDashOffset} = this.timerState;
+    chrome.storage.sync.get({totalRounds, completedRounds, targetRounds, workInterval, pomodoroLen: intervalLength, breakLen: breakIntervalLen, longBreakLen, longBreakAfter, timerActive: false},
+    ({totalRounds, completedRounds, targetRounds, workInterval, pomodoroLen, breakLen, longBreakLen, longBreakAfter, timerActive}) => {
       this.timerState.workInterval = workInterval;
       this.timerState.intervalLength = pomodoroLen*60;
       this.timerState.breakIntervalLen = breakLen*60;
@@ -75,6 +84,7 @@ class TimerManager {
       this.timerState.longBreakAfter = longBreakAfter;
       this.timerState.totalRounds = totalRounds;
       this.timerState.completedRounds = completedRounds;
+      this.timerState.targetRounds = targetRounds;
     });
 
     chrome.storage.local.get({strokeDashOffset}, ({strokeDashOffset}) => {
@@ -121,10 +131,10 @@ class TimerManager {
 
           this.intervalEnd('Time to get back to work!');
 
-          if (this.timerState.completedRounds === 10) {
+          if (this.timerState.completedRounds === this.timerState.targetRounds) {
             clearInterval(this.timer);
-            this.timerState.timerActive = false
-            chrome.storage.sync.set({timerActive: false});
+            this.timerState.timerActive = false;
+            chrome.storage.sync.set({timerActive: false, completedRounds: 0});
           }
         }
 
