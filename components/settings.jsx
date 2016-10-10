@@ -68,6 +68,9 @@ class Settings extends React.Component {
       <div>
         <div className={"settings icon"} onClick={ this.toggleContentDisplay }></div>
         <div id="settings-container" className="hide">
+          <div>
+            <h3 className="menu-title">Settings</h3>
+          </div>
           <div className="setting-item">
             Pomodoro
             <input className="setting-input" type="text" value={this.state.pomodoroLen} onChange={ this.updateSettings('pomodoroLen')}/> min

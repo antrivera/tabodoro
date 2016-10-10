@@ -208,7 +208,6 @@ class Timer extends React.Component {
 
         <div className="icons">
           <Settings />
-          <Tasks />
           <BlockList />
         </div>
 

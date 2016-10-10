@@ -57,7 +57,12 @@ class BlockList extends React.Component {
   }
 
   removeSite(site) {
-
+    return () => {
+      let idx = this.state.blockedSites.indexOf(site);
+      this.state.blockedSites.splice(idx, 1);
+      this.setState({blockedSites: this.state.blockedSites});
+      chrome.storage.sync.set({blockedSites: this.state.blockedSites});
+    }
   }
 
   render() {
@@ -65,6 +70,10 @@ class BlockList extends React.Component {
       <div>
         <div className={"blocklist icon"} onClick={ this.toggleContentDisplay } ></div>
         <div id="blocklist-container" className="hide">
+          <div>
+            <h3 className="menu-title">Blocklist</h3>
+            <p>{"Websites listed below will be inaccessible while a work interval timer is active."}</p>
+          </div>
           <div className="blocklist-input">
             <input className={"new-blocklist-site"}
               type="text"
@@ -77,7 +86,9 @@ class BlockList extends React.Component {
           <ul id="blocklist-items">
             { this.state.blockedSites.map((site, idx) => (
               <li key={idx + site}>
-                <div className={"site-item"} >{site}</div>
+                <div className={"site-item"} >{site}
+                  <button className="remove-site-btn" onClick={ this.removeSite(site) }>Remove</button>
+                </div>
               </li>
             )) }
           </ul>

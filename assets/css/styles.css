@@ -3,7 +3,7 @@ html {
 }
 
 body {
-  background: #EC5E54;
+  /*background: #EC5E54;*/
   color: white;
   /*height: inherit;*/
   font-family: 'Open sans', sans-serif;
@@ -122,13 +122,13 @@ text {
 #blocklist-container {
   /*display: none;*/
   border: 1px solid whitesmoke;
-  width: 200px;
+  width: 400px;
   padding: 10px;
   position: absolute;
   /*top: 50px;*/
   background: white;
   color: gray;
-  max-height: 200px;
+  max-height: 500px;
   overflow-y: auto;
   z-index: 1;
 }
@@ -145,9 +145,9 @@ text {
 .save-settings {
   cursor: pointer;
   width: 90%;
-  color: #5CBC9E;
+  color: white;
   border: 2px solid #5CBC9E;
-  background: white;
+  background: #5CBC9E;
   padding: 0;
   margin: 10px 10px 10px 10px;
 }
@@ -224,6 +224,42 @@ text {
 
 #completed-rounds {
   margin: 10px 10px 10px 25px;
+}
+
+.menu-title {
+  text-align: center;
+}
+
+input.new-blocklist-site {
+  width: 80%;
+}
+
+.add-new-site {
+  cursor: pointer;
+  width: 15%;
+  color: white;
+  border: 2px solid #5CBC9E;
+  background: #5CBC9E;
+  padding: 0;
+}
+
+.site-item {
+  height: 20px;
+  display: flex;
+  justify-content: space-between;
+  margin: 5px;
+}
+
+.remove-site-btn {
+  cursor: pointer;
+  background: white;
+  color: #ec5e54;
+  border: 1px solid #ec5e54;
+}
+
+.remove-site-btn:hover {
+  background: #ec5e54;
+  color: white;
 }
 
 /*
