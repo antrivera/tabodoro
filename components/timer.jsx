@@ -44,6 +44,12 @@ class Timer extends React.Component {
       document.body.style.background = workInterval ? '#EC5E54' : '#5CBC9E';
       this.setState({workInterval, timerActive});
     });
+
+    chrome.storage.local.get({elapsedTime: this.state.elapsedTime, strokeDashOffset: 1257},
+    ({elapsedTime, strokeDashOffset}) => {
+      document.getElementsByClassName('circle-animation')[0].style['stroke-dashoffset'] = strokeDashOffset;
+      this.setState({elapsedTime});
+    });
   }
 
   fetchCurrentDate() {
