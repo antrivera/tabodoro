@@ -204,11 +204,13 @@ class Timer extends React.Component {
 
     return (
       <div>
-        <h2>Tabodoro</h2>
 
         <div className="icons">
-          <Settings />
-          <BlockList />
+          <div className="lh-icons">
+            <Settings />
+            <BlockList />
+          </div>
+          <h2>Tabodoro</h2>
         </div>
 
         <div className="timer-container">
