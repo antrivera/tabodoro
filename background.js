@@ -13,19 +13,6 @@ class BlockedSitesManager {
   getBlockedSites() {
     return this.blockedSites;
   }
-
-  blockSite(site) {
-    this.blockedSites.push(site);
-    return this.blockedSites;
-  }
-
-  clearSite(site) {
-    let idx = this.blockedSites.indexOf(site);
-    if (idx !== -1) {
-      this.blockedSites.splice(idx, 1);
-    }
-    return this.blockedSites;
-  }
 }
 
 class TimerManager {
