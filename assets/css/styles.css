@@ -101,32 +101,16 @@ text {
 
 #settings-container {
   /*display: none;*/
-  border: 1px solid whitesmoke;
-  width: 200px;
-  padding: 10px;
-  margin-top: 10px;
-  position: absolute;
-  /*top: 50px;*/
-  background: white;
-  color: gray;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 16px;
 }
 
 #blocklist-container {
-  /*display: none;*/
-  border: 1px solid whitesmoke;
-  width: 400px;
-  padding: 10px;
-  margin-top: 10px;
-  position: absolute;
-  /*top: 50px;*/
-  background: white;
-  color: gray;
-  max-height: 500px;
   overflow-y: auto;
-  z-index: 1;
+  font-size: 16px;
 }
 
 .save-new-task {
@@ -140,7 +124,6 @@ text {
 
 .save-settings {
   cursor: pointer;
-  width: 90%;
   color: white;
   border: 2px solid #5CBC9E;
   background: #5CBC9E;
@@ -162,21 +145,15 @@ text {
   margin-right: 2px;
 }
 
-.task-item, .setting-item {
-  border-bottom: 1px solid whitesmoke;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  cursor: pointer;
-}
-
-.setting-item {
-  display: flex;
-  justify-content: space-around;
-}
-
 .setting-input {
   width: 50px;
   text-align: center;
+  margin-right: 20px;
+}
+
+label {
+  display: inline-block;
+  width: 150px;
 }
 
 .progress {
@@ -225,6 +202,7 @@ text {
 
 .menu-title {
   text-align: center;
+  margin: 0;
 }
 
 input.new-blocklist-site {

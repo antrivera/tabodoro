@@ -1,5 +1,6 @@
 /* global chrome */
 import React from 'react';
+import Modal from 'react-modal';
 
 class BlockList extends React.Component {
   constructor() {
@@ -13,26 +14,25 @@ class BlockList extends React.Component {
         'reddit.com',
         'netflix.com',
         'hulu.com'
-      ]
+      ],
+      open: false
     };
 
-    this._hideBlocklist = this._hideBlocklist.bind(this);
     this.blockSite = this.blockSite.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   }
 
   componentDidMount() {
     this.syncBlockList();
-    document.addEventListener('click', this._hideBlocklist(), false);
   }
 
-  _hideBlocklist() {
-    return e => {
-      let blocklist = document.getElementById('blocklist-container');
-      let blocklistIcon = document.getElementsByClassName('blocklist')[0];
-      if (e.target !== blocklistIcon && !blocklist.contains(e.target)) {
-        blocklist.classList.add('hide');
-      }
-    }
+  openModal() {
+    this.setState({open: true});
+  }
+
+  closeModal() {
+    this.setState({open: false});
   }
 
   update(name) {
@@ -43,12 +43,6 @@ class BlockList extends React.Component {
     chrome.storage.sync.get({blockedSites: this.state.blockedSites}, ({blockedSites}) => {
       this.setState({blockedSites});
     });
-  }
-
-  toggleContentDisplay() {
-    let blocklist = document.getElementById('blocklist-container');
-    blocklist.classList.toggle('hide');
-
   }
 
   blockSite() {
@@ -66,10 +60,22 @@ class BlockList extends React.Component {
   }
 
   render() {
+    const styles = {
+      content: {
+        top: 100,
+        bottom: 100,
+        left: 250,
+        right: 250,
+        color: 'black'
+      }
+    }
+
     return (
       <div>
-        <div className={"blocklist icon"} onClick={ this.toggleContentDisplay } ></div>
-        <div id="blocklist-container" className="hide">
+        <div className={"blocklist icon"} onClick={ this.openModal } ></div>
+        <Modal isOpen={this.state.open} onRequestClose={this.closeModal} style={styles}>
+
+        <div id="blocklist-container">
           <div>
             <h3 className="menu-title">Blocklist</h3>
             <p>{"Websites listed below will be inaccessible while a work interval timer is active."}</p>
@@ -93,6 +99,7 @@ class BlockList extends React.Component {
             )) }
           </ul>
         </div>
+      </Modal>
       </div>
     );
   }

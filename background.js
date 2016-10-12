@@ -36,7 +36,7 @@ class TimerManager {
   }
 
   addChangeListener() {
-    chrome.storage.onChanged.addListener(({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds, completedRounds}, namespace) => {
+    chrome.storage.onChanged.addListener(({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds, completedRounds, totalRounds}, namespace) => {
       if (pomodoroLen) {
         this.timerState.intervalLength = pomodoroLen.newValue*60;
       }
@@ -56,6 +56,10 @@ class TimerManager {
 
       if (completedRounds) {
         this.timerState.completedRounds = completedRounds.newValue;
+      }
+
+      if (totalRounds) {
+        this.timerState.totalRounds = totalRounds.newValue;
       }
     });
   }

@@ -63,13 +63,14 @@ class Timer extends React.Component {
 
       let today = new Date();
       if (today.getDate() !== timeStamp.day || today.getMonth() !== timeStamp.month || today.getFullYear() !== timeStamp.year) {
+        chrome.storage.sync.set({timeStamp: {day: today.getDate(), month: today.getMonth() , year: today.getFullYear() } })
         this.resetCompletedPomodoros();
       }
     });
   }
 
   resetCompletedPomodoros() {
-    chrome.storage.sync.set({totalRounds: 0});
+    chrome.storage.sync.set({totalRounds: 0, completedRounds: 0});
   }
 
   fetchIntervalLength() {
