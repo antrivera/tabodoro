@@ -18,13 +18,30 @@ class BlockList extends React.Component {
       open: false
     };
 
+    this._handleEnterKey = this._handleEnterKey.bind(this);
     this.blockSite = this.blockSite.bind(this);
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
   }
 
+  componentWillMount() {
+    chrome.storage.local.get('blocklistOnEnter', ({blocklistOnEnter}) => {
+      if (blocklistOnEnter) {
+        this.openModal();
+        chrome.storage.local.set({blocklistOnEnter: false});
+      }
+    });
+  }
+
   componentDidMount() {
     this.syncBlockList();
+  }
+
+  componentDidUpdate() {
+    let input = document.querySelector(".new-blocklist-site");
+    if (input) {
+      input.addEventListener('keydown', this._handleEnterKey, false);
+    }
   }
 
   openModal() {
@@ -33,6 +50,12 @@ class BlockList extends React.Component {
 
   closeModal() {
     this.setState({open: false});
+  }
+
+  _handleEnterKey(e) {
+    if (e.keyCode === 13) {
+      this.blockSite();
+    }
   }
 
   update(name) {

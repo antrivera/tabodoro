@@ -22,6 +22,12 @@ class Settings extends React.Component {
 
   componentWillMount() {
     Modal.setAppElement('#root');
+    chrome.storage.local.get('settingsOnEnter', ({settingsOnEnter}) => {
+      if (settingsOnEnter) {
+        this.openModal();
+        chrome.storage.local.set({settingsOnEnter: false});
+      }
+    });
   }
 
   componentDidMount() {
