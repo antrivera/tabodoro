@@ -28,6 +28,8 @@ class Settings extends React.Component {
         chrome.storage.local.set({settingsOnEnter: false});
       }
     });
+
+    this.settingsListener();
   }
 
   componentDidMount() {
@@ -45,6 +47,30 @@ class Settings extends React.Component {
   fetchSettings() {
     chrome.storage.sync.get(this.state, ({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds}) => {
       this.setState({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds});
+    });
+  }
+
+  settingsListener() {
+    chrome.storage.onChanged.addListener(({pomodoroLen, breakLen, longBreakLen, longBreakAfter, targetRounds}, namespace) => {
+      if (pomodoroLen) {
+        this.setState({pomodoroLen: pomodoroLen.newValue});
+      }
+      if (breakLen) {
+        this.setState({breakLen: breakLen.newValue});
+
+      }
+      if (longBreakLen) {
+        this.setState({longBreakLen: longBreakLen.newValue});
+
+      }
+      if (longBreakAfter) {
+        this.setState({longBreakAfter: longBreakAfter.newValue});
+
+      }
+
+      if (targetRounds) {
+        this.setState({targetRounds: targetRounds.newValue});
+      }
     });
   }
 
@@ -71,11 +97,15 @@ class Settings extends React.Component {
 
   render() {
     const styles = {
+      overlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.30)'
+      },
       content: {
         top: 100,
         bottom: 100,
         left: 250,
         right: 250,
+        border: '2px solid #ccc',
         color: 'black'
       }
     }

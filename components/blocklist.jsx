@@ -10,6 +10,7 @@ class BlockList extends React.Component {
       siteName: "",
       blockedSites: [
         'facebook.com',
+        'youtube.com',
         'twitter.com',
         'reddit.com',
         'netflix.com',
@@ -35,6 +36,7 @@ class BlockList extends React.Component {
 
   componentDidMount() {
     this.syncBlockList();
+    this.blockedSitesListener();
   }
 
   componentDidUpdate() {
@@ -68,9 +70,17 @@ class BlockList extends React.Component {
     });
   }
 
+  blockedSitesListener() {
+    chrome.storage.onChanged.addListener(({blockedSites}, namespace) => {
+      if (blockedSites) {
+        this.setState({blockedSites: blockedSites.newValue});
+      }
+    });
+  }
+
   blockSite() {
     if (!this.isValidDomain(this.state.siteName)) {
-      console.log('invalid');
+      // invalid domain name
       return;
     }
     chrome.storage.sync.set({blockedSites: [...this.state.blockedSites, this.state.siteName]});
@@ -93,11 +103,15 @@ class BlockList extends React.Component {
 
   render() {
     const styles = {
+      overlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.30)'
+      },
       content: {
         top: 100,
         bottom: 100,
         left: 250,
         right: 250,
+        border: '2px solid #ccc',
         color: 'black'
       }
     }

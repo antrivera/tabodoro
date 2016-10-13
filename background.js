@@ -3,6 +3,7 @@ class BlockedSitesManager {
   constructor() {
     this.blockedSites = [
       'facebook.com',
+      'youtube.com',
       'twitter.com',
       'reddit.com',
       'netflix.com',

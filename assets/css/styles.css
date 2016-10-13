@@ -1,10 +1,12 @@
 html {
   height: 100%;
+  overflow: hidden;
 }
 
 body {
   color: white;
   height: inherit;
+  overflow: auto;
   font-family: 'Open sans', sans-serif;
   display: flex;
   flex-direction: column;
@@ -124,11 +126,18 @@ text {
 
 .save-settings {
   cursor: pointer;
-  color: white;
+  color: #5CBC9E;
   border: 2px solid #5CBC9E;
-  background: #5CBC9E;
+  background: white;
   padding: 0;
-  margin: 10px 10px 10px 10px;
+  width: 100px;
+  height: 30px;
+  align-self: center;
+}
+
+.save-settings:hover {
+  color: white;
+  background: #5CBC9E;
 }
 
 .new-task {
@@ -207,11 +216,14 @@ label {
 
 input.new-blocklist-site {
   width: 80%;
+  height: 20px;
+  font-size: 16px;
 }
 
 .add-new-site {
   cursor: pointer;
   width: 15%;
+  height: 25px;
   color: white;
   border: 2px solid #5CBC9E;
   background: #5CBC9E;
@@ -240,13 +252,3 @@ input.new-blocklist-site {
 .lh-icons {
   display: flex;
 }
-
-/*
-@keyframes all {
-  0% {
-    stroke-dashoffset: 440;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}*/
