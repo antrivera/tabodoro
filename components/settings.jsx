@@ -106,7 +106,7 @@ class Settings extends React.Component {
             </div>
             <div className="setting-item">
               <label htmlFor="target">Target</label>
-              <input id="target" className="setting-input" type="text" value={this.state.targetRounds}  onChange={ this.updateSettings('targetRounds')}/> daily
+              <input id="target" className="setting-input" type="text" value={this.state.targetRounds}  onChange={ this.updateSettings('targetRounds')}/> rounds
             </div>
             <button className="save-settings" onClick={ this.saveSettings }>Save</button>
           </div>

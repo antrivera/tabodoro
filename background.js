@@ -84,7 +84,10 @@ class TimerManager {
   }
 
   intervalEnd(msg) {
-    alert(msg);
+    let ringer = new Audio();
+    ringer.src = "./assets/sounds/ding.wav";
+    ringer.play();
+    setTimeout(() => alert(msg), 1000);
   }
 
   startTimer() {
@@ -97,30 +100,37 @@ class TimerManager {
       let timerDuration = this.timerState.workInterval ? this.timerState.intervalLength : this.timerState.breakIntervalLen;
 
       if (!this.timerState.workInterval) {
-        if (this.timerState.completedRounds % this.timerState.longBreakAfter === 0) {
+        if (this.timerState.completedRounds > 0 && this.timerState.completedRounds % this.timerState.longBreakAfter === 0) {
           timerDuration = this.timerState.longBreakLen;
         }
       }
 
       if (timerDuration - this.timerState.elapsedTime < 0) {
+        // transition from work to rest interval
         if (this.timerState.workInterval) {
           this.timerState.workInterval = false;
           this.timerState.completedRounds = this.timerState.completedRounds + 1;
           this.timerState.totalRounds = this.timerState.totalRounds + 1;
           this.timerState.elapsedTime = 0;
 
-          chrome.storage.sync.set({workInterval: this.timerState.workInterval, completedRounds: this.timerState.completedRounds, totalRounds: this.timerState.totalRounds});
+          chrome.storage.sync.set({
+            workInterval: this.timerState.workInterval,
+            completedRounds: this.timerState.completedRounds,
+            totalRounds: this.timerState.totalRounds,
+            activeTask: "Rest"
+          });
           chrome.storage.local.set({elapsedTime: this.timerState.elapsedTime });
 
           this.intervalEnd('Time for a break.');
         } else {
+          // transition from rest to work interval
           this.timerState.workInterval = true;
           this.timerState.elapsedTime = 0;
 
-          chrome.storage.sync.set({workInterval: this.timerState.workInterval});
-          chrome.storage.local.set({elapsedTime: this.timerState.elapsedTime});
-
           this.intervalEnd('Time to get back to work!');
+
+          chrome.storage.sync.set({workInterval: this.timerState.workInterval, activeTask: "Focus"});
+          chrome.storage.local.set({elapsedTime: this.timerState.elapsedTime});
 
           if (this.timerState.completedRounds === this.timerState.targetRounds) {
             clearInterval(this.timer);

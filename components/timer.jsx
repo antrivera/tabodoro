@@ -183,14 +183,6 @@ class Timer extends React.Component {
     return display;
   }
 
-  intervalEnd(msg) {
-    let ringer = document.getElementById('ringer')
-    ringer.play();
-    alert(msg);
-    ringer.pause();
-    ringer.currentTime = 0;
-  }
-
   startTimer() {
     chrome.storage.sync.set({timerActive: true});
   }
