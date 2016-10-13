@@ -69,8 +69,17 @@ class BlockList extends React.Component {
   }
 
   blockSite() {
+    if (!this.isValidDomain(this.state.siteName)) {
+      console.log('invalid');
+      return;
+    }
     chrome.storage.sync.set({blockedSites: [...this.state.blockedSites, this.state.siteName]});
     this.setState({blockedSites: [...this.state.blockedSites, this.state.siteName]});
+  }
+
+  isValidDomain(domain) {
+    let regex = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
+    return domain.match(regex);
   }
 
   removeSite(site) {
