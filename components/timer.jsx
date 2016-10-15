@@ -195,7 +195,7 @@ class Timer extends React.Component {
     let timerDuration = this.state.workInterval ? this.state.intervalLength : this.state.breakIntervalLen
 
     if (!this.state.workInterval) {
-      if (this.state.completedRounds % this.state.longBreakAfter === 0) {
+      if (this.state.completedRounds > 0 && this.state.completedRounds % this.state.longBreakAfter === 0) {
         timerDuration = this.state.longBreakLen;
       }
     }

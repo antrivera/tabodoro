@@ -2,13 +2,17 @@
   "manifest_version": 2,
 
   "name": "Tabodoro",
-  "description": "Turn new tab page into a pomodoro timer to boost productivity and focus",
-  "version": "1.0",
+  "description": "Turn the new tab page into a pomodoro timer to boost productivity and focus",
+  "version": "0.0.0.2",
 
   "browser_action": {
-   "default_icon": "timer-icon.png",
+   "default_icon": "icon32.png",
    "default_popup": "popup.html",
    "default_title": "Tabodoro"
+ },
+ "icons": {
+   "48": "icon48.png",
+   "128": "icon128.png"
  },
  "chrome_url_overrides": {
    "newtab": "timer.html"

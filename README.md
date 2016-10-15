@@ -1,23 +1,19 @@
 ## Tabodoro
 
+[Tabodoro on the Chrome Store](https://chrome.google.com/webstore/detail/tabodoro/cgkkaiaecglnikkphgbmmfnhfnmejjdj)
+
 ### Background
 
 The pomodoro technique is a time management method developed by Francesco Cirillo in the late 1980s. It works by using a timer to designate work intervals, typically 25 min in length, separated by short 5 min breaks.  These intervals are known as pomodoros.  
 
-Tabodoro is a Chrome extension that turns new tab pages into a pomodoro timer page, where users can set the length of their pomodoros and break intervals, as well as how many they wish to complete.  Users can also provide labels to their pomodoros to remind themselves of the task at hand.
+Tabodoro is a Chrome extension that turns new tab pages into a pomodoro timer page, where users can set the length of their pomodoros and break intervals, as well as how many they wish to complete.  Users can also add sites to a blocklist, which will then disable the user from visiting these blocklisted sites while the pomodoro timer is active.
 
-### Functionality & MVP
+### Functionality
 
-- [ ] Turn new tab pages into a pomodoro timer
-- [ ] Set the length of work and break intervals on the timer
-- [ ] Label their pomodoros
-- [ ] Save settings to sync across all machines using chrome storage
-
-### Wireframes
-
-![wireframes](wireframes/timer.png)
-![wireframes](wireframes/settings-break.png)
-![wireframes](wireframes/tasks.png)
+- [ ] Turns new tab pages into a pomodoro timer
+- [ ] Edit the length of work and break intervals on the timer, as well as target
+- [ ] Site blacklist
+- [ ] Save settings to sync across all devices using chrome storage
 
 ### Technologies and Implementation Details
 
@@ -25,7 +21,11 @@ Tabodoro is a Chrome extension that turns new tab pages into a pomodoro timer pa
 - `chrome.storage` API
 - `webpack`
 
-The React structure consists of Timer, Settings, and Task components. When each component mounts they each first fetch any stored information that pertains to them using `chrome.storage.sync.get`.  This function call is passed the keys to look up in chrome storage, along with default values in case nothing is stored.  These key-value pairs are obtained from the state of the component, which is initialized with default values.  The API call is also passed a callback which updates the state with the values found in storage, triggering a re-render.
+The React structure consists of Timer, Settings, and Blocklist components. When each component mounts they each first fetch any stored information that pertains to them using `chrome.storage.sync.get`.  The actual timer functionality is implemented in a background script in order to keep every timer tab synchronized.  
+
+The background script saves an elapsedTime and strokeDashOffset key-value pair to `chrome.storage.local` upon each tick that the react Timer component then receives when mounting and on update with a `chrome.storage.onChanged` event listener.  The local storage space is used in this case instead of sync storage due to the write limit imposed on sync storage, and the fact that while a user would expect their settings and blocklist to persist across various devices, they would not need the timer state to do so.   
+
+This storage function call is passed the keys to look up in chrome storage, along with default values in case nothing is stored.  These key-value pairs are obtained from the state of the component, which is initialized with default values.  The API call is also passed a callback which updates the state with the values found in storage, triggering a re-render.
 
 ```javascript
 componentDidMount() {
@@ -57,6 +57,5 @@ c.strokeDashoffset = initialOffset-((updatedTime)*((initialOffset)/timerDuration
 ```
 #To-do
 
-- [ ] Blacklist certain websites from being visited while work interval is active
-- [ ] Better alert/ringer for when timer intervals have ended
-- [ ] Integrate Google charts in to allow users to visually track their progress
+- [ ] Allow users to add and label tasks, and individually track completion for each task
+- [ ] Integrate in Google charts to allow users to visually track their progress
